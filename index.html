@@ -3,31 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DUNYA PRINT | Wedding & Gift Studio</title>
+  <title>DUNYA PRINT - Wedding & Gift Studio</title>
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    body {
-      background-color: #FAF8F5;
-      color: #3A3A3A;
-      font-family: 'Sarabun', sans-serif;
-    }
-    .gold {
-      color: #D6C7A1;
-    }
-    .soft-bg {
-      background-color: #FFFDF8;
-    }
-    .border-gold {
-      border-color: #D6C7A1;
-    }
+    body { background-color: #FAF8F5; color: #3A3A3A; font-family: 'Sarabun', sans-serif; }
+    .gold { color: #D6C7A1; }
+    .bg-gold-light { background-color: #F5EFE3; }
+    .soft-shadow { box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
   </style>
 </head>
-<body class="min-h-screen flex flex-col">
-
+<body>
   <!-- Header -->
   <header class="bg-white shadow-sm py-5">
-    <div class="max-w-5xl mx-auto flex justify-between items-center px-5">
+    <div class="max-w-6xl mx-auto flex justify-between items-center px-5">
       <h1 class="text-2xl font-semibold gold">DUNYA PRINT</h1>
       <nav class="space-x-6 text-gray-700">
         <a href="index.html" class="hover:text-[#D6C7A1]">หน้าแรก</a>
@@ -36,24 +25,35 @@
     </div>
   </header>
 
-  <!-- Hero -->
-  <section class="text-center py-16">
-    <h2 class="text-3xl font-light mb-3">🎎 ของขวัญวันสำคัญ</h2>
-    <p class="text-gray-500">เรียบหรู พิถีพิถันในทุกดีเทล</p>
+  <!-- Hero Section -->
+  <section class="text-center py-20">
+    <h2 class="text-4xl font-light mb-3">ของขวัญวันสำคัญ ด้วยความพิถีพิถันในทุกดีเทล</h2>
+    <p class="text-gray-500 mb-6">เรียบหรู สไตล์มินิมอลแบบญี่ปุ่น</p>
+    <a href="#packages" class="bg-[#D6C7A1] text-white px-8 py-3 rounded hover:opacity-90">ดูแพ็กเกจ</a>
   </section>
 
-  <!-- Product List -->
-  <main class="flex-1 max-w-3xl mx-auto w-full px-5">
-    <h3 class="text-xl font-semibold mb-6 gold border-b border-gold pb-2">สินค้าแนะนำ</h3>
-    <div id="product-list" class="space-y-6"></div>
-  </main>
+  <!-- 🎁 แพ็กเกจสุดคุ้ม -->
+  <section id="packages" class="bg-gold-light py-16">
+    <div class="max-w-5xl mx-auto px-5">
+      <h3 class="text-2xl font-semibold gold mb-8 text-center">🎀 แพ็กเกจสุดคุ้มสำหรับวันพิเศษของคุณ</h3>
+      <div id="package-list" class="space-y-6"></div>
+    </div>
+  </section>
+
+  <!-- 💸 โปรโมชั่นพิเศษ -->
+  <section id="promotions" class="bg-[#FAF8F5] py-16">
+    <div class="max-w-5xl mx-auto px-5">
+      <h3 class="text-2xl font-semibold gold mb-8 text-center">💍 โปรโมชั่นพิเศษ — ลดราคาสินค้าสุดหรู</h3>
+      <div id="promo-list" class="space-y-6"></div>
+    </div>
+  </section>
 
   <!-- Footer -->
   <footer class="text-center text-gray-500 text-sm py-6 border-t border-[#EAE5DD] mt-10">
     © 2025 DUNYA PRINT | Wedding & Gift Studio
   </footer>
 
-  <!-- Firebase Script -->
+  <!-- Firebase -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
     import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-database.js";
@@ -71,41 +71,77 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
-    const productList = document.getElementById("product-list");
 
-    function formatDate(dateStr) {
+    const packageList = document.getElementById("package-list");
+    const promoList = document.getElementById("promo-list");
+
+    // format date
+    const formatDate = (dateStr) => {
       const d = new Date(dateStr);
       return d.toLocaleDateString("th-TH", { year: 'numeric', month: 'long', day: 'numeric' });
-    }
+    };
 
-    function renderProducts(snapshot) {
-      productList.innerHTML = "";
-      snapshot.forEach(item => {
-        const data = item.val();
-        const discount = data.discount ? `<span class='text-sm text-gray-400 line-through mr-2'>฿${data.price}</span>` : "";
-        const finalPrice = data.discount
-          ? `<span class='text-lg font-semibold gold'>฿${(data.price - (data.price * data.discount / 100)).toFixed(0)}</span>`
-          : `<span class='text-lg font-semibold gold'>฿${data.price}</span>`;
+    // load packages
+    onValue(ref(db, "packages"), (snapshot) => {
+      packageList.innerHTML = "";
+      snapshot.forEach((pkg) => {
+        const p = pkg.val();
+        const now = new Date();
+        const end = new Date(p.endDate);
+        const isExpired = end < now;
+        const hasDiscount = p.discount && p.discount > 0;
+        const discounted = hasDiscount ? p.price - (p.price * p.discount / 100) : p.price;
 
-        productList.innerHTML += `
-          <div class="bg-white border border-[#EAE5DD] rounded-xl p-5 shadow-sm">
-            <div class="flex flex-col md:flex-row gap-4">
+        packageList.innerHTML += `
+          <div class="bg-white rounded-xl p-6 soft-shadow flex flex-col md:flex-row gap-6">
+            <div class="w-full md:w-1/3 h-40 rounded-lg overflow-hidden bg-[#FAF8F5] flex items-center justify-center">
+              ${p.image ? `<img src="${p.image}" class="w-full h-full object-cover">` : "📦"}
+            </div>
+            <div class="flex-1">
+              <h4 class="text-xl font-medium mb-1">${p.name}</h4>
+              <p class="text-gray-600 mb-2">${p.description}</p>
+              <div class="mb-1">
+                ${hasDiscount ? `<span class="line-through text-gray-400 text-sm">฿${p.price}</span>
+                <span class="gold font-semibold text-lg ml-2">฿${discounted}</span>` 
+                : `<span class="gold font-semibold text-lg">฿${p.price}</span>`}
+              </div>
+              ${isExpired ? `<p class="text-gray-400 text-sm">หมดโปรแล้ว</p>` 
+              : p.endDate ? `<p class="text-gray-400 text-sm">หมดโปร ${formatDate(p.endDate)}</p>` : ""}
+            </div>
+          </div>`;
+      });
+    });
+
+    // load promotions (discount > 0)
+    onValue(ref(db, "products"), (snapshot) => {
+      promoList.innerHTML = "";
+      snapshot.forEach((item) => {
+        const d = item.val();
+        const now = new Date();
+        const end = new Date(d.endDate);
+        const isExpired = end < now;
+        if (d.discount && d.discount > 0) {
+          const discounted = d.price - (d.price * d.discount / 100);
+          promoList.innerHTML += `
+            <div class="bg-white rounded-xl p-6 soft-shadow flex flex-col md:flex-row gap-6">
               <div class="w-full md:w-1/3 h-40 rounded-lg overflow-hidden bg-[#FAF8F5] flex items-center justify-center">
-                ${data.image ? `<img src="${data.image}" alt="${data.name}" class="w-full h-full object-cover">` : "📦"}
+                ${d.image ? `<img src="${d.image}" class="w-full h-full object-cover">` : "📦"}
               </div>
               <div class="flex-1">
-                <h4 class="text-lg font-medium mb-1">${data.name}</h4>
-                <p class="text-sm text-gray-500 mb-2">${data.description || ""}</p>
-                <div class="mb-2">${discount}${finalPrice}</div>
-                ${data.endDate ? `<p class="text-xs text-gray-400">หมดโปร ${formatDate(data.endDate)}</p>` : ""}
+                <h4 class="text-xl font-medium mb-1">${d.name}</h4>
+                <p class="text-gray-600 mb-2">${d.description}</p>
+                <div class="mb-1">
+                  <span class="line-through text-gray-400 text-sm">฿${d.price}</span>
+                  <span class="gold font-semibold text-lg ml-2">฿${discounted}</span>
+                </div>
+                ${isExpired ? `<p class="text-gray-400 text-sm">หมดโปรแล้ว</p>` 
+                : d.endDate ? `<p class="text-gray-400 text-sm">หมดโปร ${formatDate(d.endDate)}</p>` : ""}
+                <a href="#products" class="text-sm text-[#D6C7A1] hover:underline">ดูรายละเอียด</a>
               </div>
-            </div>
-          </div>
-        `;
+            </div>`;
+        }
       });
-    }
-
-    onValue(ref(db, "products"), renderProducts);
+    });
   </script>
 </body>
 </html>

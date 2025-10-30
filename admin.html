@@ -6,13 +6,78 @@
   <title>DUNYA PRINT | Admin Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <script type="module">
-    // ============================
-    // Firebase Config (ของคุณ)
-    // ============================
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
-    import { getDatabase, ref, get, set, push, remove } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-database.js";
+  <style>
+    body {
+      font-family: 'Sarabun', sans-serif;
+      background-color: #FDFBF8;
+      color: #4B4B4B;
+    }
+  </style>
+</head>
+<body class="min-h-screen">
 
+  <!-- 🔐 Login Section -->
+  <section id="login-section" class="flex flex-col items-center justify-center h-screen text-center">
+    <h1 class="text-3xl font-semibold text-amber-800 mb-4">DUNYA PRINT</h1>
+    <p class="text-gray-500 mb-6">เข้าสู่ระบบจัดการหลังบ้าน</p>
+    <input id="password" type="password" placeholder="รหัสผ่าน" class="border border-amber-200 rounded-lg px-4 py-2 mb-4 text-center">
+    <button id="login-btn" class="bg-amber-500 text-white px-6 py-2 rounded-lg hover:bg-amber-600 transition">เข้าสู่ระบบ</button>
+    <p id="login-error" class="text-red-500 mt-4 hidden">❌ รหัสผ่านไม่ถูกต้อง</p>
+  </section>
+
+  <!-- 🧭 Admin Panel -->
+  <section id="admin-section" class="hidden max-w-5xl mx-auto py-12 px-6">
+    <h2 class="text-2xl font-medium text-amber-700 mb-8 text-center">Admin Dashboard</h2>
+
+    <!-- Tabs -->
+    <div class="flex space-x-4 justify-center mb-8">
+      <button onclick="scrollToSection('product-section')" class="bg-amber-100 text-amber-800 px-6 py-2 rounded-lg hover:bg-amber-200 transition">สินค้า</button>
+      <button onclick="scrollToSection('package-section')" class="bg-amber-100 text-amber-800 px-6 py-2 rounded-lg hover:bg-amber-200 transition">แพ็กเกจ</button>
+    </div>
+
+    <!-- Product Form -->
+    <div id="product-section" class="bg-white border border-amber-100 rounded-xl p-6 mb-10 shadow-sm">
+      <h3 class="text-xl font-semibold text-amber-700 mb-4">เพิ่มสินค้าใหม่</h3>
+      <form id="product-form" class="grid gap-4 md:grid-cols-2">
+        <input id="product-name" type="text" placeholder="ชื่อสินค้า" class="border rounded-lg px-4 py-2">
+        <input id="product-price" type="number" placeholder="ราคา (บาท)" class="border rounded-lg px-4 py-2">
+        <input id="product-discount" type="number" placeholder="ส่วนลด (%)" class="border rounded-lg px-4 py-2">
+        <input id="product-image" type="url" placeholder="URL รูปสินค้า" class="border rounded-lg px-4 py-2 md:col-span-2">
+        <button type="button" id="add-product" class="bg-amber-500 text-white px-6 py-2 rounded-lg hover:bg-amber-600 transition md:col-span-2">บันทึกสินค้า</button>
+      </form>
+    </div>
+
+    <!-- Package Form -->
+    <div id="package-section" class="bg-white border border-amber-100 rounded-xl p-6 mb-10 shadow-sm">
+      <h3 class="text-xl font-semibold text-amber-700 mb-4">เพิ่มแพ็กเกจสุดคุ้ม</h3>
+      <form id="package-form" class="grid gap-4 md:grid-cols-2">
+        <input id="package-name" type="text" placeholder="ชื่อแพ็กเกจ" class="border rounded-lg px-4 py-2">
+        <input id="package-price" type="number" placeholder="ราคา (บาท)" class="border rounded-lg px-4 py-2">
+        <input id="package-discount" type="number" placeholder="ส่วนลด (%)" class="border rounded-lg px-4 py-2">
+        <input id="package-end" type="date" class="border rounded-lg px-4 py-2">
+        <input id="package-image" type="url" placeholder="URL รูปแพ็กเกจ" class="border rounded-lg px-4 py-2 md:col-span-2">
+        <button type="button" id="add-package" class="bg-amber-500 text-white px-6 py-2 rounded-lg hover:bg-amber-600 transition md:col-span-2">บันทึกแพ็กเกจ</button>
+      </form>
+    </div>
+
+    <!-- 📊 Dashboard -->
+    <div class="bg-amber-50 border border-amber-100 rounded-xl p-8 text-center shadow-inner">
+      <h3 class="text-xl font-semibold text-amber-700 mb-6">ภาพรวมทั้งหมด</h3>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div><p class="text-3xl font-bold text-amber-600" id="stat-products">0</p><p class="text-gray-500">สินค้าทั้งหมด</p></div>
+        <div><p class="text-3xl font-bold text-amber-600" id="stat-packages">0</p><p class="text-gray-500">แพ็กเกจทั้งหมด</p></div>
+        <div><p class="text-3xl font-bold text-amber-600" id="stat-discounted">0</p><p class="text-gray-500">สินค้าลดราคา</p></div>
+        <div><p class="text-3xl font-bold text-amber-600" id="stat-expired">0</p><p class="text-gray-500">แพ็กเกจหมดโปร</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+  <script>
+    // 🔧 Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyAhky9wrqgm7r6BAJqYq4zo92aiV9_2Gyw",
       authDomain: "dunyaprint-shop.firebaseapp.com",
@@ -23,177 +88,73 @@
       appId: "1:78107878309:web:a57a377b28ff884e2e3e4c",
       measurementId: "G-P4BHPCHK87"
     };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-
-    // ============================
-    // รหัสล็อกอินง่าย ๆ
-    // ============================
-    function login() {
-      const pass = document.getElementById("password").value;
+    // ✅ Login
+    document.getElementById("login-btn").addEventListener("click", function () {
+      const pass = document.getElementById("password").value.trim();
       if (pass === "dunya2025") {
         document.getElementById("login-section").classList.add("hidden");
         document.getElementById("admin-section").classList.remove("hidden");
-        loadDashboard();
+        loadStats();
       } else {
-        alert("รหัสผ่านไม่ถูกต้อง ❌");
+        document.getElementById("login-error").classList.remove("hidden");
       }
-    }
+    });
 
-    // ============================
-    // โหลด Dashboard Summary
-    // ============================
-    async function loadDashboard() {
-      const productsRef = ref(db, "products");
-      const packagesRef = ref(db, "packages");
-      const productsSnap = await get(productsRef);
-      const packagesSnap = await get(packagesRef);
-
-      let products = productsSnap.exists() ? Object.values(productsSnap.val()) : [];
-      let packages = packagesSnap.exists() ? Object.values(packagesSnap.val()) : [];
-
-      const totalProducts = products.length;
-      const totalPackages = packages.length;
-      const discounted = products.filter(p => p.discount && p.discount > 0).length;
-      const expiredPackages = packages.filter(p => new Date(p.endDate) < new Date()).length;
-
-      animateValue("stat-products", 0, totalProducts, 1000);
-      animateValue("stat-packages", 0, totalPackages, 1000);
-      animateValue("stat-discounted", 0, discounted, 1000);
-      animateValue("stat-expired", 0, expiredPackages, 1000);
-    }
-
-    // ============================
-    // ฟังก์ชันนับเลข (แอนิเมชัน)
-    // ============================
-    function animateValue(id, start, end, duration) {
-      if (start === end) return;
-      const range = end - start;
-      const increment = end > start ? 1 : -1;
-      const stepTime = Math.abs(Math.floor(duration / range));
-      let current = start;
-      const obj = document.getElementById(id);
-      const timer = setInterval(() => {
-        current += increment;
-        obj.textContent = current;
-        if (current == end) clearInterval(timer);
-      }, stepTime);
-    }
-
-    // ============================
-    // เพิ่มสินค้าใหม่
-    // ============================
-    async function addProduct() {
+    // 📦 Add Product
+    document.getElementById("add-product").addEventListener("click", function () {
       const name = document.getElementById("product-name").value;
       const price = parseFloat(document.getElementById("product-price").value);
       const discount = parseInt(document.getElementById("product-discount").value) || 0;
       const image = document.getElementById("product-image").value;
 
-      if (!name || !price) return alert("กรอกชื่อและราคาก่อนค่ะ");
+      if (!name || !price) return alert("กรุณากรอกชื่อและราคา");
 
-      const newRef = push(ref(db, "products"));
-      await set(newRef, { name, price, discount, image });
+      db.ref("products").push({ name, price, discount, image });
       alert("✅ เพิ่มสินค้าเรียบร้อยแล้ว!");
       document.getElementById("product-form").reset();
-      loadDashboard();
-    }
+      loadStats();
+    });
 
-    // ============================
-    // เพิ่มแพ็กเกจใหม่
-    // ============================
-    async function addPackage() {
+    // 🎁 Add Package
+    document.getElementById("add-package").addEventListener("click", function () {
       const name = document.getElementById("package-name").value;
       const price = parseFloat(document.getElementById("package-price").value);
       const discount = parseInt(document.getElementById("package-discount").value) || 0;
       const endDate = document.getElementById("package-end").value;
       const image = document.getElementById("package-image").value;
 
-      if (!name || !price) return alert("กรอกชื่อและราคาก่อนค่ะ");
+      if (!name || !price) return alert("กรุณากรอกชื่อและราคา");
 
-      const newRef = push(ref(db, "packages"));
-      await set(newRef, { name, price, discount, endDate, image });
+      db.ref("packages").push({ name, price, discount, endDate, image });
       alert("✅ เพิ่มแพ็กเกจเรียบร้อยแล้ว!");
       document.getElementById("package-form").reset();
-      loadDashboard();
+      loadStats();
+    });
+
+    // 📊 Load Dashboard
+    function loadStats() {
+      db.ref("products").once("value", snap => {
+        const data = snap.val() || {};
+        const items = Object.values(data);
+        document.getElementById("stat-products").textContent = items.length;
+        document.getElementById("stat-discounted").textContent = items.filter(p => p.discount > 0).length;
+      });
+
+      db.ref("packages").once("value", snap => {
+        const data = snap.val() || {};
+        const items = Object.values(data);
+        const expired = items.filter(p => p.endDate && new Date(p.endDate) < new Date()).length;
+        document.getElementById("stat-packages").textContent = items.length;
+        document.getElementById("stat-expired").textContent = expired;
+      });
+    }
+
+    function scrollToSection(id) {
+      document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
     }
   </script>
-  <style>
-    body {
-      font-family: 'Sarabun', sans-serif;
-      background-color: #FDFBF8;
-      color: #4B4B4B;
-    }
-  </style>
-</head>
-<body class="min-h-screen">
-  <!-- 🔐 Login Section -->
-  <section id="login-section" class="flex flex-col items-center justify-center h-screen text-center">
-    <h1 class="text-3xl font-semibold text-amber-800 mb-4">DUNYA PRINT</h1>
-    <p class="text-gray-500 mb-6">เข้าสู่ระบบจัดการหลังบ้าน</p>
-    <input id="password" type="password" placeholder="รหัสผ่าน" class="border border-amber-200 rounded-lg px-4 py-2 mb-4 text-center">
-    <button onclick="login()" class="bg-amber-500 text-white px-6 py-2 rounded-lg hover:bg-amber-600 transition">เข้าสู่ระบบ</button>
-  </section>
-
-  <!-- 🧭 Admin Panel -->
-  <section id="admin-section" class="hidden max-w-5xl mx-auto py-12 px-6">
-    <h2 class="text-2xl font-medium text-amber-700 mb-8 text-center">Admin Dashboard</h2>
-
-    <!-- Tabs -->
-    <div class="flex space-x-4 justify-center mb-8">
-      <button onclick="document.getElementById('product-form').scrollIntoView({behavior:'smooth'})"
-              class="bg-amber-100 text-amber-800 px-6 py-2 rounded-lg hover:bg-amber-200 transition">สินค้า</button>
-      <button onclick="document.getElementById('package-form').scrollIntoView({behavior:'smooth'})"
-              class="bg-amber-100 text-amber-800 px-6 py-2 rounded-lg hover:bg-amber-200 transition">แพ็กเกจ</button>
-    </div>
-
-    <!-- Product Form -->
-    <div class="bg-white border border-amber-100 rounded-xl p-6 mb-10 shadow-sm">
-      <h3 class="text-xl font-semibold text-amber-700 mb-4">เพิ่มสินค้าใหม่</h3>
-      <form id="product-form" class="grid gap-4 md:grid-cols-2">
-        <input id="product-name" type="text" placeholder="ชื่อสินค้า" class="border rounded-lg px-4 py-2">
-        <input id="product-price" type="number" placeholder="ราคา (บาท)" class="border rounded-lg px-4 py-2">
-        <input id="product-discount" type="number" placeholder="ส่วนลด (%)" class="border rounded-lg px-4 py-2">
-        <input id="product-image" type="url" placeholder="URL รูปสินค้า" class="border rounded-lg px-4 py-2 md:col-span-2">
-        <button type="button" onclick="addProduct()" class="bg-amber-500 text-white px-6 py-2 rounded-lg hover:bg-amber-600 transition md:col-span-2">บันทึกสินค้า</button>
-      </form>
-    </div>
-
-    <!-- Package Form -->
-    <div class="bg-white border border-amber-100 rounded-xl p-6 mb-10 shadow-sm">
-      <h3 class="text-xl font-semibold text-amber-700 mb-4">เพิ่มแพ็กเกจสุดคุ้ม</h3>
-      <form id="package-form" class="grid gap-4 md:grid-cols-2">
-        <input id="package-name" type="text" placeholder="ชื่อแพ็กเกจ" class="border rounded-lg px-4 py-2">
-        <input id="package-price" type="number" placeholder="ราคา (บาท)" class="border rounded-lg px-4 py-2">
-        <input id="package-discount" type="number" placeholder="ส่วนลด (%)" class="border rounded-lg px-4 py-2">
-        <input id="package-end" type="date" class="border rounded-lg px-4 py-2">
-        <input id="package-image" type="url" placeholder="URL รูปแพ็กเกจ" class="border rounded-lg px-4 py-2 md:col-span-2">
-        <button type="button" onclick="addPackage()" class="bg-amber-500 text-white px-6 py-2 rounded-lg hover:bg-amber-600 transition md:col-span-2">บันทึกแพ็กเกจ</button>
-      </form>
-    </div>
-
-    <!-- 📊 Dashboard Summary -->
-    <div class="bg-amber-50 border border-amber-100 rounded-xl p-8 text-center shadow-inner">
-      <h3 class="text-xl font-semibold text-amber-700 mb-6">ภาพรวมทั้งหมด</h3>
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-        <div>
-          <p class="text-3xl font-bold text-amber-600" id="stat-products">0</p>
-          <p class="text-gray-500">สินค้าทั้งหมด</p>
-        </div>
-        <div>
-          <p class="text-3xl font-bold text-amber-600" id="stat-packages">0</p>
-          <p class="text-gray-500">แพ็กเกจทั้งหมด</p>
-        </div>
-        <div>
-          <p class="text-3xl font-bold text-amber-600" id="stat-discounted">0</p>
-          <p class="text-gray-500">สินค้าลดราคา</p>
-        </div>
-        <div>
-          <p class="text-3xl font-bold text-amber-600" id="stat-expired">0</p>
-          <p class="text-gray-500">แพ็กเกจหมดโปร</p>
-        </div>
-      </div>
-    </div>
-  </section>
 </body>
 </html>

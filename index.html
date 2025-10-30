@@ -4,80 +4,108 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DUNYA PRINT | Wedding & Gift Studio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: 'Poppins', 'Noto Serif JP', serif;
-      background-color: #FAF9F6;
+      background-color: #FAF8F5;
       color: #3A3A3A;
+      font-family: 'Sarabun', sans-serif;
     }
-    .border-gold { border-color: #E8D5B7; }
-    .text-gold { color: #C9B27D; }
-    .bg-gold { background-color: #E8D5B7; }
+    .gold {
+      color: #D6C7A1;
+    }
+    .soft-bg {
+      background-color: #FFFDF8;
+    }
+    .border-gold {
+      border-color: #D6C7A1;
+    }
   </style>
 </head>
 <body class="min-h-screen flex flex-col">
 
   <!-- Header -->
-  <header class="bg-white border-b border-gold py-6 sticky top-0 z-50 shadow-sm">
-    <div class="max-w-6xl mx-auto flex justify-between items-center px-6">
-      <h1 class="text-3xl font-[Noto Serif JP] tracking-wide">DUNYA PRINT</h1>
-      <nav class="flex space-x-8 text-gray-700 text-lg">
-        <a href="index.html" class="hover:text-gold">หน้าแรก</a>
-        <a href="products.html" class="hover:text-gold">สินค้า</a>
-        <a href="contact.html" class="hover:text-gold">ติดต่อเรา</a>
+  <header class="bg-white shadow-sm py-5">
+    <div class="max-w-5xl mx-auto flex justify-between items-center px-5">
+      <h1 class="text-2xl font-semibold gold">DUNYA PRINT</h1>
+      <nav class="space-x-6 text-gray-700">
+        <a href="index.html" class="hover:text-[#D6C7A1]">หน้าแรก</a>
+        <a href="admin.html" class="hover:text-[#D6C7A1]">จัดการสินค้า</a>
       </nav>
     </div>
   </header>
 
-  <!-- Hero Section (No Image) -->
-  <section class="text-center py-28 bg-[#FAF9F6]">
-    <div class="max-w-2xl mx-auto">
-      <div class="text-6xl mb-8">💍🎀🌿</div>
-      <h2 class="text-5xl md:text-6xl font-[Noto Serif JP] text-gray-800 mb-6">
-        ของขวัญวันสำคัญ
-      </h2>
-      <p class="text-xl text-gray-600 mb-10">
-        ด้วยความเรียบหรูเหนือเวลา ✨
-      </p>
-      <a href="products.html" class="bg-gold text-white px-10 py-4 rounded-lg text-lg hover:bg-[#d7c29e] transition">
-        ดูสินค้า
-      </a>
-    </div>
+  <!-- Hero -->
+  <section class="text-center py-16">
+    <h2 class="text-3xl font-light mb-3">🎎 ของขวัญวันสำคัญ</h2>
+    <p class="text-gray-500">เรียบหรู พิถีพิถันในทุกดีเทล</p>
   </section>
 
-  <!-- Product Categories -->
-  <section class="py-20 bg-white border-t border-b border-gold">
-    <div class="max-w-6xl mx-auto px-6 text-center">
-      <h3 class="text-3xl font-[Noto Serif JP] mb-12">หมวดสินค้า</h3>
-      <div class="grid md:grid-cols-3 gap-8">
-        <div class="border border-gold rounded-xl p-8 bg-[#FAF9F6]">
-          <div class="text-5xl mb-3">💌</div>
-          <h4 class="text-xl font-semibold mb-2">การ์ดแต่งงาน</h4>
-          <p class="text-gray-500 mb-4">ดีไซน์เรียบหรูเหนือเวลา</p>
-          <a href="products.html" class="text-gold font-medium">ดูรายละเอียด →</a>
-        </div>
-        <div class="border border-gold rounded-xl p-8 bg-[#FAF9F6]">
-          <div class="text-5xl mb-3">🎁</div>
-          <h4 class="text-xl font-semibold mb-2">ของชำร่วย</h4>
-          <p class="text-gray-500 mb-4">ของขวัญแทนใจในวันสำคัญ</p>
-          <a href="products.html" class="text-gold font-medium">ดูรายละเอียด →</a>
-        </div>
-        <div class="border border-gold rounded-xl p-8 bg-[#FAF9F6]">
-          <div class="text-5xl mb-3">🍰</div>
-          <h4 class="text-xl font-semibold mb-2">เค้กแต่งงาน</h4>
-          <p class="text-gray-500 mb-4">หวานละมุน ดีไซน์สุดประณีต</p>
-          <a href="products.html" class="text-gold font-medium">ดูรายละเอียด →</a>
-        </div>
-      </div>
-    </div>
-  </section>
+  <!-- Product List -->
+  <main class="flex-1 max-w-3xl mx-auto w-full px-5">
+    <h3 class="text-xl font-semibold mb-6 gold border-b border-gold pb-2">สินค้าแนะนำ</h3>
+    <div id="product-list" class="space-y-6"></div>
+  </main>
 
   <!-- Footer -->
-  <footer class="bg-white border-t border-gold py-8 text-center text-gray-600">
-    <p>© 2025 DUNYA PRINT | Wedding & Gift Studio</p>
+  <footer class="text-center text-gray-500 text-sm py-6 border-t border-[#EAE5DD] mt-10">
+    © 2025 DUNYA PRINT | Wedding & Gift Studio
   </footer>
 
+  <!-- Firebase Script -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAhky9wrqgm7r6BAJqYq4zo92aiV9_2Gyw",
+      authDomain: "dunyaprint-shop.firebaseapp.com",
+      databaseURL: "https://dunyaprint-shop-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "dunyaprint-shop",
+      storageBucket: "dunyaprint-shop.firebasestorage.app",
+      messagingSenderId: "78107878309",
+      appId: "1:78107878309:web:a57a377b28ff884e2e3e4c",
+      measurementId: "G-P4BHPCHK87"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const productList = document.getElementById("product-list");
+
+    function formatDate(dateStr) {
+      const d = new Date(dateStr);
+      return d.toLocaleDateString("th-TH", { year: 'numeric', month: 'long', day: 'numeric' });
+    }
+
+    function renderProducts(snapshot) {
+      productList.innerHTML = "";
+      snapshot.forEach(item => {
+        const data = item.val();
+        const discount = data.discount ? `<span class='text-sm text-gray-400 line-through mr-2'>฿${data.price}</span>` : "";
+        const finalPrice = data.discount
+          ? `<span class='text-lg font-semibold gold'>฿${(data.price - (data.price * data.discount / 100)).toFixed(0)}</span>`
+          : `<span class='text-lg font-semibold gold'>฿${data.price}</span>`;
+
+        productList.innerHTML += `
+          <div class="bg-white border border-[#EAE5DD] rounded-xl p-5 shadow-sm">
+            <div class="flex flex-col md:flex-row gap-4">
+              <div class="w-full md:w-1/3 h-40 rounded-lg overflow-hidden bg-[#FAF8F5] flex items-center justify-center">
+                ${data.image ? `<img src="${data.image}" alt="${data.name}" class="w-full h-full object-cover">` : "📦"}
+              </div>
+              <div class="flex-1">
+                <h4 class="text-lg font-medium mb-1">${data.name}</h4>
+                <p class="text-sm text-gray-500 mb-2">${data.description || ""}</p>
+                <div class="mb-2">${discount}${finalPrice}</div>
+                ${data.endDate ? `<p class="text-xs text-gray-400">หมดโปร ${formatDate(data.endDate)}</p>` : ""}
+              </div>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    onValue(ref(db, "products"), renderProducts);
+  </script>
 </body>
 </html>

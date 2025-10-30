@@ -10,6 +10,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
     import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-database.js";
 
+    // 🔧 Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyAhky9wrqgm7r6BAJqYq4zo92aiV9_2Gyw",
       authDomain: "dunyaprint-shop.firebaseapp.com",
@@ -24,23 +25,36 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
+    // 📦 โหลดข้อมูลแพ็กเกจ
     async function loadPackages() {
       const container = document.getElementById("packages-list");
       const snapshot = await get(ref(db, "packages"));
+
       if (!snapshot.exists()) {
         container.innerHTML = `<p class='text-gray-500 text-center'>ไม่มีข้อมูลแพ็กเกจ</p>`;
         return;
       }
+
       const packages = Object.values(snapshot.val());
       container.innerHTML = packages.map(pkg => {
         const expired = pkg.endDate && new Date(pkg.endDate) < new Date();
         const priceAfter = pkg.discount ? pkg.price * (1 - pkg.discount / 100) : pkg.price;
+
         return `
-          <div class="border border-amber-100 rounded-lg p-6 bg-white shadow-sm">
+          <div class="relative border border-amber-100 rounded-xl p-6 bg-white shadow-sm overflow-hidden hover:shadow-md transition">
+            <!-- 🎀 ป้ายแพ็กเกจสุดคุ้ม -->
+            <div class="absolute top-3 right-3 bg-amber-200 text-amber-800 text-sm font-medium px-3 py-1 rounded-full shadow-sm">
+              แพ็กเกจสุดคุ้ม
+            </div>
+
+            <!-- รายละเอียด -->
             <h3 class="text-xl font-medium text-amber-800 mb-2">${pkg.name}</h3>
-            <p class="text-gray-500 line-through">${pkg.discount ? "฿" + pkg.price : ""}</p>
+            ${pkg.image ? `<img src="${pkg.image}" alt="${pkg.name}" class="w-full h-40 object-cover rounded-md mb-4 border border-amber-50">` : ''}
+            <p class="text-gray-500 ${pkg.discount ? 'line-through' : ''}">
+              ${pkg.discount ? '฿' + pkg.price : ''}
+            </p>
             <p class="text-amber-600 font-bold text-lg">฿${priceAfter.toFixed(0)}</p>
-            ${pkg.discount ? `<p class="text-sm text-gray-500 mt-2">ลด ${pkg.discount}%</p>` : ""}
+            ${pkg.discount ? `<p class="text-sm text-gray-500 mt-2">ลด ${pkg.discount}%</p>` : ''}
             <p class="text-sm ${expired ? 'text-gray-400' : 'text-amber-600'} mt-2">
               ${expired ? 'หมดโปรแล้ว' : 'หมดเขต: ' + pkg.endDate}
             </p>
@@ -51,11 +65,18 @@
 
     loadPackages();
   </script>
+
   <style>
-    body { font-family: 'Sarabun', sans-serif; background-color: #FDFBF8; color: #4B4B4B; }
+    body {
+      font-family: 'Sarabun', sans-serif;
+      background-color: #FDFBF8;
+      color: #4B4B4B;
+    }
   </style>
 </head>
+
 <body>
+  <!-- Header -->
   <header class="border-b border-amber-100 bg-white shadow-sm">
     <div class="max-w-5xl mx-auto px-6 py-4 flex justify-between items-center">
       <h1 class="text-2xl font-semibold text-amber-700">แพ็กเกจสุดคุ้ม</h1>
@@ -63,11 +84,15 @@
     </div>
   </header>
 
+  <!-- Content -->
   <main class="max-w-5xl mx-auto px-6 py-12">
-    <h2 class="text-2xl text-amber-800 font-medium mb-6 text-center">แพ็กเกจสุดคุ้มจาก DUNYA PRINT</h2>
-    <div id="packages-list" class="grid gap-6 md:grid-cols-2 lg:grid-cols-3"></div>
+    <h2 class="text-2xl text-amber-800 font-medium mb-8 text-center">
+      แพ็กเกจสุดคุ้มจาก DUNYA PRINT
+    </h2>
+    <div id="packages-list" class="grid gap-8 md:grid-cols-2 lg:grid-cols-3"></div>
   </main>
 
+  <!-- Footer -->
   <footer class="border-t border-amber-100 py-6 text-center text-gray-500">
     © 2025 DUNYA PRINT | Wedding & Gift Studio
   </footer>

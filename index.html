@@ -28,16 +28,40 @@
   </header>
 
   <!-- Hero -->
-  <section class="relative text-center py-28 overflow-hidden bg-[#FAF9F6]">
-    <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=1600&q=80"
-         alt="Minimal wedding stationery" 
-         class="absolute inset-0 w-full h-full object-cover opacity-20">
-    <div class="relative z-10">
-      <h2 class="text-5xl md:text-6xl font-[Noto Serif JP] text-gray-800 mb-6">ของขวัญวันสำคัญ</h2>
-      <p class="text-xl text-gray-600 mb-10">ด้วยความเรียบหรูเหนือเวลา</p>
-      <a href="products.html" class="bg-gold text-white px-10 py-4 rounded-lg text-lg">ดูสินค้า</a>
-    </div>
-  </section>
+  <!-- Hero Section (Auto Slide) -->
+<section class="relative text-center overflow-hidden bg-[#FAF9F6]" style="height: 90vh;">
+  <!-- สไลด์ภาพ -->
+  <div id="hero-slider" class="absolute inset-0 w-full h-full">
+    <img src="https://images.unsplash.com/photo-1504208434309-cb69f4fe52b0?auto=format&fit=crop&w=1600&q=80" 
+         class="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-1000">
+    <img src="https://images.unsplash.com/photo-1529634892681-1b5b4d5c67c7?auto=format&fit=crop&w=1600&q=80" 
+         class="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-1000">
+    <img src="https://images.unsplash.com/photo-1602874801006-22c8e6c42e35?auto=format&fit=crop&w=1600&q=80" 
+         class="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-1000">
+  </div>
+
+  <!-- ข้อความและปุ่ม -->
+  <div class="relative z-10 flex flex-col items-center justify-center h-full bg-white/70 backdrop-blur-sm">
+    <h2 class="text-5xl md:text-6xl font-[Noto Serif JP] text-gray-800 mb-6">ของขวัญวันสำคัญ</h2>
+    <p class="text-xl text-gray-600 mb-10">ด้วยความเรียบหรูเหนือเวลา</p>
+    <a href="products.html" class="bg-[#E8D5B7] text-white px-10 py-4 rounded-lg text-lg hover:bg-[#d7c29e] transition">
+      ดูสินค้า
+    </a>
+  </div>
+</section>
+
+<script>
+  // สคริปต์สไลด์ภาพอัตโนมัติ
+  const slides = document.querySelectorAll('#hero-slider img');
+  let current = 0;
+  slides[current].classList.add('opacity-100');
+
+  setInterval(() => {
+    slides[current].classList.remove('opacity-100');
+    current = (current + 1) % slides.length;
+    slides[current].classList.add('opacity-100');
+  }, 5000);
+</script>
 
   <!-- Product Categories -->
   <section class="py-20 bg-white border-t border-b border-gold">

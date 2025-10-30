@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin | DUNYA PRINT</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { background-color: #FAF8F5; color: #3A3A3A; font-family: 'Sarabun', sans-serif; }
+    .gold { color: #D6C7A1; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center">
+
+  <!-- Login -->
+  <div id="login" class="bg-white p-8 rounded-xl shadow-md w-96 text-center">
+    <h1 class="text-2xl font-semibold gold mb-4">DUNYA PRINT ADMIN</h1>
+    <p class="text-sm text-gray-500 mb-6">กรอกรหัสผ่านเพื่อจัดการสินค้า</p>
+    <input id="password" type="password" class="border border-[#D6C7A1] rounded-lg p-3 w-full mb-4" placeholder="รหัสผ่าน">
+    <button onclick="login()" class="bg-[#D6C7A1] text-white px-6 py-2 rounded-lg w-full hover:bg-[#c4b48d]">เข้าสู่ระบบ</button>
+  </div>
+
+  <!-- Admin Panel -->
+  <div id="admin" class="hidden w-full max-w-3xl p-6">
+    <h2 class="text-2xl font-semibold gold mb-4">จัดการสินค้า</h2>
+    <form id="product-form" class="bg-white rounded-lg p-6 shadow mb-6">
+      <div class="grid md:grid-cols-2 gap-4">
+        <input id="name" placeholder="ชื่อสินค้า" class="border p-3 rounded">
+        <input id="price" placeholder="ราคา (บาท)" type="number" class="border p-3 rounded">
+        <input id="discount" placeholder="ส่วนลด (%)" type="number" class="border p-3 rounded">
+        <input id="endDate" type="date" class="border p-3 rounded">
+      </div>
+      <textarea id="description" placeholder="รายละเอียดสินค้า" class="border p-3 rounded w-full mt-3"></textarea>
+      <input id="image" placeholder="ลิงก์รูปภาพ" class="border p-3 rounded w-full mt-3">
+      <button type="submit" class="bg-[#D6C7A1] text-white px-6 py-2 rounded-lg w-full mt-4 hover:bg-[#c4b48d]">บันทึกสินค้า</button>
+    </form>
+    <div id="product-list" class="space-y-4"></div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+    import { getDatabase, ref, push, set, remove, onValue } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAhky9wrqgm7r6BAJqYq4zo92aiV9_2Gyw",
+      authDomain: "dunyaprint-shop.firebaseapp.com",
+      databaseURL: "https://dunyaprint-shop-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "dunyaprint-shop",
+      storageBucket: "dunyaprint-shop.firebasestorage.app",
+      messagingSenderId: "78107878309",
+      appId: "1:78107878309:web:a57a377b28ff884e2e3e4c",
+      measurementId: "G-P4BHPCHK87"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    const adminDiv = document.getElementById("admin");
+    const loginDiv = document.getElementById("login");
+
+    function login() {
+      const pass = document.getElementById("password").value;
+      if (pass === "dunya2025") {
+        loginDiv.classList.add("hidden");
+        adminDiv.classList.remove("hidden");
+      } else {
+        alert("รหัสผ่านไม่ถูกต้อง");
+      }
+    }
+
+    const form = document.getElementById("product-form");
+    const productList = document.getElementById("product-list");
+
+    form.addEventListener("submit", e => {
+      e.preventDefault();
+      const newProduct = {
+        name: form.name.value,
+        price: Number(form.price.value),
+        discount: Number(form.discount.value) || 0,
+        endDate: form.endDate.value,
+        description: form.description.value,
+        image: form.image.value
+      };
+      push(ref(db, "products"), newProduct);
+      form.reset();
+    });
+
+    onValue(ref(db, "products"), snapshot => {
+      productList.innerHTML = "";
+      snapshot.forEach(item => {
+        const data = item.val();
+        const id = item.key;
+        productList.innerHTML += `
+          <div class="bg-white p-4 border border-[#EAE5DD] rounded-lg flex justify-between items-center">
+            <div>
+              <h4 class="font-medium">${data.name}</h4>
+              <p class="text-sm text-gray-500">฿${data.price} | ส่วนลด ${data.discount || 0}%</p>
+            </div>
+            <button onclick="deleteProduct('${id}')" class="text-red-500 hover:text-red-700 text-sm">ลบ</button>
+          </div>
+        `;
+      });
+    });
+
+    window.deleteProduct = function(id) {
+      remove(ref(db, "products/" + id));
+    }
+  </script>
+</body>
+</html>
